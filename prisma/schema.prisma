@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Product{
+  id String @default(uuid()) @id
+  sku String @unique
+
+  name String @unique
+  description String @db.VarChar(2000)
+  primaryImageUrl String?
+
+  inStock Int @default(0)
+  price Float
+  sale Boolean @default(false)
+  discount Float @default(0.00)
+  speciality String @db.VarChar(50) @default("regular")
+
+  productImages ProductImage[]
+  productVariants ProductVariant[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@fulltext([id,name, description, sku])
+}
+
+model ProductImage {
+  id String @default(cuid()) @id
+  
+  url       String @unique
+  type  ImageType @default(SECONDARY)
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+}
+
+enum ImageType{
+  PRIMARY
+  SECONDARY
+}
+
+model ProductVariant{
+  id String @default(uuid()) @id
+  sku String @unique
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  size String @db.VarChar(10)
+  color String @db.VarChar(20)
+  inStock Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@fulltext([id,size, color, sku])
+}
+
+model Order_item{
+  id String @default(uuid()) @id
+  productId String
+  productSku String
+
+  productVariantId String
+  productVariantSku String
+  size String @db.VarChar(10)
+  color String @db.VarChar(20)
+
+  quantity Int
+  price Float
+
+  order Order @relation(fields: [orderId], references: [id])
+  orderId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order{
+  id String @default(uuid()) @id
+
+  totalAmount Float @default(0.00)
+  status OrderStatus @default(PENDING)
+
+  customerNumber String @db.VarChar(11)
+  customerAddress String @db.VarChar(500)
+
+  orderItems Order_item[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@fulltext([id,customerNumber, customerAddress])
+}
+
+enum OrderStatus{
+  PENDING
+  INDELIVERY
+  DELIVERED
+}
+
+model User {
+  id String @default(cuid()) @id
+
+  email String @unique
+  hashedPassword String
+  hashedRt String?
+
+  role UserRole @default(USER)
+
+  passwordChangeAt DateTime?
+  passwordResetOtpCode String?
+  passwordResetExpires DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@fulltext([id,email])
+}
+
+enum UserRole{
+  USER
+  ADMIN
+  MODERATOR
+}
