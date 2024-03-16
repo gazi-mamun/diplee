@@ -1,6 +1,7 @@
 import { Injectable, Query } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
+import { EmailService } from 'src/email/emailService';
 
 @Injectable()
 export class OrderService {
@@ -10,9 +11,25 @@ export class OrderService {
     delete createOrderDto.totalAmount;
     delete createOrderDto.status;
 
-    return await this.databaseService.order.create({
+    if (createOrderDto?.division === 'DHAKA') {
+      createOrderDto.deliveryCharge = 100.0;
+    } else {
+      createOrderDto.deliveryCharge = 150.0;
+    }
+
+    const newOrder = await this.databaseService.order.create({
       data: createOrderDto,
     });
+
+    if (newOrder) {
+      const link = 'https://admin.diplee.com/orders/details/' + newOrder?.id;
+      await new EmailService(
+        'rakibsamim36@gmail.com',
+        link,
+      ).orderNotification();
+    }
+
+    return newOrder;
   }
 
   async findAll(@Query() query) {
@@ -66,6 +83,25 @@ export class OrderService {
   }
 
   async update(id: string, updateOrderDto: Prisma.OrderUpdateInput) {
+    if (updateOrderDto.deliveryCharge) {
+      delete updateOrderDto.deliveryCharge;
+    }
+    if (updateOrderDto.division) {
+      if (updateOrderDto.division === 'DHAKA') {
+        updateOrderDto.deliveryCharge = 100.0;
+      } else {
+        updateOrderDto.deliveryCharge = 120.0;
+      }
+    }
+    return await this.databaseService.order.update({
+      where: {
+        id,
+      },
+      data: updateOrderDto,
+    });
+  }
+
+  async updateByAdmin(id: string, updateOrderDto: Prisma.OrderUpdateInput) {
     return await this.databaseService.order.update({
       where: {
         id,
@@ -88,6 +124,9 @@ export class OrderService {
     const result = await this.databaseService.order.findMany({
       where: {
         id: {
+          search: searchTerm,
+        },
+        customerName: {
           search: searchTerm,
         },
         customerNumber: {

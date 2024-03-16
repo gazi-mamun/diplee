@@ -1,4 +1,8 @@
-import { Injectable, Query } from '@nestjs/common';
+import {
+  Injectable,
+  Query,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 
@@ -9,6 +13,19 @@ export class ProductService {
   async create(createProductDto: Prisma.ProductCreateInput) {
     delete createProductDto.inStock;
     delete createProductDto.primaryImageUrl;
+
+    const category = await this.databaseService.category.findUnique({
+      where: {
+        name: createProductDto?.category,
+      },
+    });
+
+    if (!category) {
+      throw new UnprocessableEntityException(
+        'Please enter a valid category name',
+      );
+    }
+
     let newProduct = await this.databaseService.product.create({
       data: createProductDto,
     });
@@ -51,6 +68,7 @@ export class ProductService {
       sortBy = 'createdAt-asc';
     }
     const inStock = query.instock || null;
+    const category = query.category || null;
 
     const orderBy = {
       [sortBy.split('-')[0]]: sortBy.split('-')[1] == 'desc' ? 'desc' : 'asc',
@@ -58,7 +76,12 @@ export class ProductService {
 
     const productCount = await this.databaseService.product.aggregate({
       where: {
-        speciality: speciality !== null ? speciality : undefined,
+        speciality:
+          speciality == null || speciality == 'undefined'
+            ? undefined
+            : speciality,
+        category:
+          category == null || category == 'undefined' ? undefined : category,
         AND: [
           {
             inStock: {
@@ -90,7 +113,12 @@ export class ProductService {
       skip,
       take: limit,
       where: {
-        speciality: speciality !== null ? speciality : undefined,
+        speciality:
+          speciality == null || speciality == 'undefined'
+            ? undefined
+            : speciality,
+        category:
+          category == null || category == 'undefined' ? undefined : category,
         AND: [
           {
             inStock: {
@@ -172,6 +200,21 @@ export class ProductService {
           },
         });
       });
+    }
+
+    if (updateProductDto.category) {
+      const newCat = updateProductDto.category.toString();
+      const category = await this.databaseService.category.findUnique({
+        where: {
+          name: newCat,
+        },
+      });
+
+      if (!category) {
+        throw new UnprocessableEntityException(
+          'Please enter a valid category name',
+        );
+      }
     }
 
     return await this.databaseService.product.update({

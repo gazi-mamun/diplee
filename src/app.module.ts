@@ -13,6 +13,7 @@ import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { OrderItemModule } from './order_item/order_item.module';
 import { PermissionsGuard } from './common/guards/permissions.guard';
+import { CategoryModule } from './category/category.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { PermissionsGuard } from './common/guards/permissions.guard';
     ProductImageModule,
     UserModule,
     OrderItemModule,
+    CategoryModule,
   ],
   providers: [
     {

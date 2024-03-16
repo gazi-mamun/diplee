@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Order | Diplee</title>
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500;600&family=Roboto:wght@700&display=swap');
+
+      body {
+        margin: 0;
+      }
+      table {
+        border-spacing: 0;
+      }
+      td {
+        padding: 0;
+      }
+      img {
+        border: 0;
+      }
+
+      .wrapper {
+        width: 100%;
+        table-layout: fixed;
+        background-color: #fafbfb;
+        padding: 40px 0;
+      }
+
+      .main {
+        width: 100%;
+        max-width: 600px;
+        background-color: #fff;
+        box-shadow:
+          rgba(0, 11, 8, 0.02) 0px 1px 3px 0px,
+          rgba(0, 11, 8, 0.15) 0px 0px 0px 1px;
+        text-align: center;
+        font-family: 'Nunito', sans-serif;
+        border-radius: 5px;
+        overflow: hidden;
+      }
+
+      h2 {
+        font-family: 'Roboto', sans-serif;
+        font-weight: 700;
+        color: #00563f;
+        line-height: 100%;
+      }
+
+      p {
+        line-height: 150%;
+        font-size: 15px;
+        color: #354764;
+      }
+
+      .generalText {
+        text-align: start;
+        padding: 8px 32px;
+        font-weight: 500;
+      }
+
+      .footer {
+        font-family: 'Nunito', sans-serif;
+        color: #5d6b82;
+        padding: 16px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <center class="wrapper">
+      <table class="main" width="100%">
+        <!-- LOGO SECTION -->
+        <tr>
+          <td style="padding: 4px 0 4px">
+            <img
+              src="./emailAssets/diplee-logo.png"
+              alt="Diplee"
+              title="Diplee"
+              width="150"
+            />
+          </td>
+        </tr>
+
+        <!-- TEXT -->
+
+        <tr>
+          <td class="generalText">
+            <p>Hooray!!</p>
+            <p style="padding: 0px 0 20px 0">
+              Someone made a new purchase at www.diplee.com. Check out the
+              purchase/order at
+              <a
+                href="{{orderLink}}"
+                style="color: #e74c3c; cursor: pointer; word-break: break-all"
+                >{{orderLink}}</a
+              >.
+            </p>
+          </td>
+        </tr>
+      </table>
+      <!-- End Main Class -->
+
+      <!-- footer -->
+      <table>
+        <tr>
+          <td class="footer">
+            <p style="font-size: 14px">©2024 Diplee. All rights reserved.</p>
+          </td>
+        </tr>
+      </table>
+    </center>
+    <!-- End Wrapper -->
+  </body>
+</html>

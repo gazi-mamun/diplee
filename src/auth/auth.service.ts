@@ -66,6 +66,19 @@ export class AuthService {
     };
   }
 
+  async logout(response: Response): Promise<any> {
+    const cookieOptions = {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    };
+
+    response.cookie('access_token', undefined, cookieOptions);
+
+    return {
+      access_token: undefined,
+    };
+  }
+
   hashData(data: string) {
     return bcrypt.hash(data, 10);
   }
@@ -77,7 +90,7 @@ export class AuthService {
         email,
         role,
       },
-      { secret: 'new-secret', expiresIn: 60 * 60 * 24 * 7 },
+      { secret: process.env.JWT_SECRET, expiresIn: 60 * 60 * 24 * 7 },
     );
     return at;
   }

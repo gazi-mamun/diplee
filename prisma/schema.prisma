@@ -12,7 +12,7 @@ datasource db {
 }
 
 model Product{
-  id String @default(uuid()) @id
+  id String @default(cuid()) @id
   sku String @unique
 
   name String @unique
@@ -25,6 +25,8 @@ model Product{
   discount Float @default(0.00)
   speciality String @db.VarChar(50) @default("regular")
 
+  category String @db.VarChar(80)
+
   productImages ProductImage[]
   productVariants ProductVariant[]
   
@@ -32,6 +34,15 @@ model Product{
   updatedAt DateTime @updatedAt
 
   @@fulltext([id,name, description, sku])
+}
+
+model Category{
+  id String @default(cuid()) @id
+
+  name String @db.VarChar(80) @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ProductImage {
@@ -50,7 +61,7 @@ enum ImageType{
 }
 
 model ProductVariant{
-  id String @default(uuid()) @id
+  id String @default(cuid()) @id
   sku String @unique
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -66,7 +77,7 @@ model ProductVariant{
 }
 
 model Order_item{
-  id String @default(uuid()) @id
+  id String @default(cuid()) @id
   productId String
   productSku String
 
@@ -78,7 +89,7 @@ model Order_item{
   quantity Int
   price Float
 
-  order Order @relation(fields: [orderId], references: [id])
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String
 
   createdAt DateTime @default(now())
@@ -86,26 +97,43 @@ model Order_item{
 }
 
 model Order{
-  id String @default(uuid()) @id
+  id String @default(cuid()) @id
 
+  deliveryCharge Float @default(0.00)
   totalAmount Float @default(0.00)
   status OrderStatus @default(PENDING)
 
+
+  customerName String @db.VarChar(100)
   customerNumber String @db.VarChar(11)
+
   customerAddress String @db.VarChar(500)
+  division Divisions
+
 
   orderItems Order_item[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@fulltext([id,customerNumber, customerAddress])
+  @@fulltext([id,customerName, customerNumber, customerAddress])
 }
 
 enum OrderStatus{
   PENDING
   INDELIVERY
   DELIVERED
+}
+
+enum Divisions{
+  BARISAL
+  CHITTAGONG
+  DHAKA
+  KHULNA
+  MYMENSINGH
+  RAJSHAHI
+  RANGPUR
+  SYLHET
 }
 
 model User {

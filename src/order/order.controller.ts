@@ -46,6 +46,14 @@ export class OrderController {
     return this.orderService.update(id, updateOrderDto);
   }
 
+  @Patch('/by-admin/:id')
+  updateByAdmin(
+    @Param('id') id: string,
+    @Body() updateOrderDto: Prisma.OrderUpdateInput,
+  ) {
+    return this.orderService.updateByAdmin(id, updateOrderDto);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.orderService.remove(id);

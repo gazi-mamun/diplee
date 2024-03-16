@@ -35,7 +35,7 @@ export class OrderItemService {
     });
 
     if (!product) {
-      throw new NotFoundException('There is not product with this id');
+      throw new NotFoundException('There is no product with this id');
     }
 
     const productVariant = await this.databaseService.productVariant.findUnique(
