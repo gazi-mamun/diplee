@@ -12,9 +12,9 @@ export class OrderService {
     delete createOrderDto.status;
 
     if (createOrderDto?.division === 'DHAKA') {
-      createOrderDto.deliveryCharge = 100.0;
+      createOrderDto.deliveryCharge = 70.0;
     } else {
-      createOrderDto.deliveryCharge = 150.0;
+      createOrderDto.deliveryCharge = 120.0;
     }
 
     const newOrder = await this.databaseService.order.create({
@@ -23,10 +23,7 @@ export class OrderService {
 
     if (newOrder) {
       const link = 'https://admin.diplee.com/orders/details/' + newOrder?.id;
-      await new EmailService(
-        'rakibsamim36@gmail.com',
-        link,
-      ).orderNotification();
+      await new EmailService(process.env.ADMIN_EMAIL, link).orderNotification();
     }
 
     return newOrder;
@@ -88,11 +85,48 @@ export class OrderService {
     }
     if (updateOrderDto.division) {
       if (updateOrderDto.division === 'DHAKA') {
-        updateOrderDto.deliveryCharge = 100.0;
+        updateOrderDto.deliveryCharge = 70.0;
       } else {
         updateOrderDto.deliveryCharge = 120.0;
       }
     }
+
+    const order = await this.databaseService.order.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (updateOrderDto?.status) {
+      const orderItems = await this.databaseService.order_item.findMany({
+        where: {
+          orderId: id,
+        },
+      });
+
+      if (orderItems.length > 0) {
+        orderItems?.map(async (item) => {
+          const variant = await this.databaseService.productVariant.findUnique({
+            where: {
+              id: item?.productVariantId,
+            },
+          });
+          await this.databaseService.productVariant.update({
+            where: {
+              id: variant?.id,
+            },
+            data: {
+              inStock:
+                updateOrderDto?.status === 'PENDING'
+                  ? variant.inStock + item.quantity
+                  : order.status === 'PENDING' &&
+                    variant.inStock - item.quantity,
+            },
+          });
+        });
+      }
+    }
+
     return await this.databaseService.order.update({
       where: {
         id,

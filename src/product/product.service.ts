@@ -107,7 +107,6 @@ export class ProductService {
     });
 
     const totalPages = Math.ceil(productCount._count._all / limit);
-    console.log(productCount, totalPages);
 
     const products = await this.databaseService.product.findMany({
       skip,

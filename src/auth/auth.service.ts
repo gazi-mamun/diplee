@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthDto } from './dto/auth.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Token } from './tokenTypes';
 import { DatabaseService } from 'src/database/database.service';
 import { JwtService } from '@nestjs/jwt';
@@ -25,9 +25,14 @@ export class AuthService {
 
     const token = await this.genTokens(newUser.id, newUser.email, newUser.role);
 
+    console.log(token);
+
     const cookieOptions = {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       httpOnly: true,
+      SameSite: 'none',
+      secure: true,
+      domain: 'diplee.com',
     };
 
     response.cookie('access_token', token, cookieOptions);
@@ -57,6 +62,9 @@ export class AuthService {
     const cookieOptions = {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       httpOnly: true,
+      SameSite: 'none',
+      secure: true,
+      domain: 'diplee.com',
     };
 
     response.cookie('access_token', token, cookieOptions);
@@ -70,6 +78,9 @@ export class AuthService {
     const cookieOptions = {
       expires: new Date(Date.now()),
       httpOnly: true,
+      SameSite: 'none',
+      secure: true,
+      domain: 'diplee.com',
     };
 
     response.cookie('access_token', undefined, cookieOptions);

@@ -13,7 +13,7 @@ export class EmailService {
     this.to = email;
     this.orderLink = orderLink;
     this.content = {};
-    this.from = `Diplee <${process.env.EMAIL_FROM}>`;
+    this.from = `Diplee <${process.env.EMAIL_USERNAME}>`;
   }
 
   newTransport() {
@@ -26,6 +26,13 @@ export class EmailService {
       },
     } as nodemailer.TransportOptions);
   }
+
+  // .readFileSync(
+  //   `${__dirname}/../../emails/orderNotification.html`,
+  //   'utf-8',
+  // )
+
+  // .readFileSync(`${__dirname}/emails/orderNotification.html`, 'utf-8')
 
   // Send the actual email
   async send(template: string, subject: string) {

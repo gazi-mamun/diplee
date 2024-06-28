@@ -14,9 +14,11 @@ import { UserModule } from './user/user.module';
 import { OrderItemModule } from './order_item/order_item.module';
 import { PermissionsGuard } from './common/guards/permissions.guard';
 import { CategoryModule } from './category/category.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({}),
     DatabaseModule,
     ProductModule,
     ProductVariantModule,
@@ -27,6 +29,7 @@ import { CategoryModule } from './category/category.module';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
+      // rootPath: join(__dirname, '..', '../uploads'),
       serveRoot: '/uploads/',
     }),
     ProductImageModule,
